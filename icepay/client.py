@@ -70,7 +70,7 @@ class IcepayClient:
         data = json.dumps(data, separators=(',', ':'))
 
         headers = {
-            'MerchantID': self.merchant_id,
+            'MerchantID': str(self.merchant_id),
             'Checksum': self.calc_checksum(full_url, method, data),
             'Content-Type': 'application/json'
         }
