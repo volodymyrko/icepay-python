@@ -23,7 +23,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version='0.1.1',
     description='A client for Icepay Rest API',
     long_description=long_description,
     url='https://github.com/Producters/icepay-python',
@@ -44,6 +44,6 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     keywords='icepay',
-    packages=find_packages(exclude=['icepay']),
+    packages=['icepay'],
     install_requires=['requests>=2.11.1'],
 )
