@@ -42,6 +42,11 @@ Usage
     #get payment info by id
     payment = client.GetPayment(1232)
 
+    #validate postback checksum
+    # request.POST is dict or QueryDict with key:value map of post data
+    # throws AssertionError on failure
+    client.validate_postback(request.POST) 
+
 Advanced usage
 --------------
 

@@ -53,6 +53,34 @@ class IcepayClient:
         m.update(sig.encode('utf8'))
         return m.hexdigest()
 
+    def validate_postback(self, data):
+        """
+        data is QueryDict or dict, values received in POST.
+        calcs and checks sha1 digest
+        """
+        parts = [
+            self.secret_code,
+            self.merchant_id,
+            data.get('Status'),
+            data.get('StatusCode'),
+            data.get('OrderID'),
+            data.get('PaymentID'),
+            data.get('Reference'),
+            data.get('TransactionID'),
+            data.get('Amount'),
+            data.get('Currency'),
+            data.get('Duration'),
+            data.get('ConsumerIPAddress')
+        ]
+
+        sig = '|'.join([str(x) for x in parts])
+
+        m = hashlib.sha1()
+        m.update(sig.encode('utf8'))
+        digest = m.hexdigest()
+        checksum = data.get('Checksum')
+        assert digest == checksum, 'invalid postback checksum'
+
     def format_timestamp(self, time=None):
         #returns timestamp formatted as per icepay specs. must be utc.
         #returns now() if specific time not provided
