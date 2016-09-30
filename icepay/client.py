@@ -170,4 +170,4 @@ class IcepayClient:
 
         values['chk'] = m.hexdigest()
 
-        return self.BASIC_PAYMENT_URL + '?' + urllib.urlencode(values)
+        return self.BASIC_PAYMENT_URL + '?' + urllib.parse.urlencode(values)
