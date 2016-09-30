@@ -2,6 +2,7 @@ import json
 import hashlib
 import datetime
 import requests
+import urllib
 
 """
 Usage:
@@ -30,6 +31,7 @@ payment_data = client.GetPayment(order_data['PaymentID'])
 class IcepayClient:
 
     BASE_API_URL = 'https://connect.icepay.com/webservice/api/v1/'
+    BASIC_PAYMENT_URL = 'https://pay.icepay.eu/basic/'
 
     def __init__(self, merchant_id, secret_code):
         self.merchant_id = merchant_id
@@ -124,3 +126,48 @@ class IcepayClient:
 
     def GetPayment(self, PaymentID):
         return self.call_api('POST', 'payment/getpayment', {"PaymentID": PaymentID})
+
+
+    def getBasicPaymentURL(self, values):
+        """
+        url = client.getBasicPaymentURL({
+            'IC_OrderID': 123,
+            'IC_Amount': 100,
+            'IC_Currency': 'EUR',
+            'IC_Country': 'LT',
+            'IC_URLCompleted': 'http://example.com/success',
+            'IC_URLError': 'http://example.com/fail'
+        })
+        """
+
+        ALL_FIELDS = ['IC_OrderID', 'IC_Amount', 'IC_Currency', 'IC_PaymentMethod', 'IC_Issuer', 'IC_Country',
+                        'IC_Reference', 'IC_Description', 'IC_URLCompleted', 'IC_URLError', 'IC_PBMID']
+        REQUIRED_FIELDS = ['IC_Amount', 'IC_Currency', 'IC_Country', 'IC_OrderID']
+
+        CHECKSUM_FIELDS = ['IC_Amount', 'IC_OrderID', 'IC_Reference', 'IC_Currency', 'IC_Country',
+                           'IC_URLCompleted', 'IC_URLError']
+
+
+        #some validation
+        assert isinstance(values, dict), 'values must be a dict'
+
+        missing_fields = [field for field in REQUIRED_FIELDS if field not in values]
+        assert len(missing_fields) == 0, 'Missing fields: %s' % ', '.join(missing_fields)
+
+        unknown_fields = [key for key in values.keys() if key not in ALL_FIELDS]
+        assert len(unknown_fields) == 0, 'Unknown fields: %s' % ', '.join(unknown_fields)
+
+        assert isinstance(values['IC_Amount'], int), 'IC_Amount must be int, amount in cents.'
+
+        values['IC_MerchantID'] = self.merchant_id
+        values['IC_Version'] = 2
+
+        #calc signature
+        parts = [self.merchant_id, self.secret_code]  + [values.get(field, None) for field in CHECKSUM_FIELDS]
+        sig = '|'.join([str(part if (part or part == 0) else '') for part in parts])
+        m = hashlib.sha1()
+        m.update(sig.encode('utf8'))
+
+        values['chk'] = m.hexdigest()
+
+        return self.BASIC_PAYMENT_URL + '?' + urllib.urlencode(values)

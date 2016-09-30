@@ -27,7 +27,7 @@ Usage
     #checkout
     order_data = client.Checkout({
         "Amount": "1",
-        "Country": "LT",
+        "Country": "US",
         "Currency": "EUR",
         "Description": "Test",
         "EndUserIP": "127.0.0.1",
@@ -47,15 +47,21 @@ Usage
     # throws AssertionError on failure
     client.validate_postback(request.POST) 
 
+
+    #generate URL for the BASIC payment mode
+    url = client.getBasicPaymentURL({
+        'IC_OrderID': 123,
+        'IC_Amount': 100,
+        'IC_Currency': 'EUR',
+        'IC_Country': 'US',
+        'IC_URLCompleted': 'https://mywebshop.com/Payment/Success',
+        'IC_URLError': 'https://mywebshop.com/Payment/Failure'
+    })
+
 Advanced usage
 --------------
 
 .. code:: python
-
-
-    #calculate checksum for a request (eg, postback).
-    checksum = client.calc_checksum('https://www.mywebshop.com/postback', 'POST', request.raw_body)
-    assert checksum == requset.headers['Checksum']
 
 
     #make an API call for an endpoint that doesnt have a helper in this lib
