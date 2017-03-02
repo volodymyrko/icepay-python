@@ -75,7 +75,7 @@ class IcepayClient:
             data.get('ConsumerIPAddress')
         ]
 
-        sig = '|'.join([str(x) for x in parts])
+        sig = '|'.join(str(x) for x in parts if x is not None)
 
         m = hashlib.sha1()
         m.update(sig.encode('utf8'))
