@@ -58,5 +58,5 @@ Usage
     client.get_payment_refunds(payment_id):
 
 
-Used with pthon 3.5.x
+Used with python 3.5.x
 -----
